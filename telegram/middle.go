@@ -2,6 +2,7 @@ package telegram
 
 import (
 	"fmt"
+	"net"
 	"sync"
 	"time"
 
@@ -63,7 +64,7 @@ func (m *middleTelegram) backgroundUpdate() {
 }
 
 func (m *middleTelegram) Dial(dc conntypes.DC,
-	protocol conntypes.ConnectionProtocol,
+	protocol conntypes.ConnectionProtocol, raddr *net.TCPAddr,
 ) (conntypes.StreamReadWriteCloser, error) {
 	if dc == 0 {
 		dc = conntypes.DCDefaultIdx
@@ -72,5 +73,5 @@ func (m *middleTelegram) Dial(dc conntypes.DC,
 	m.mutex.RLock()
 	defer m.mutex.RUnlock()
 
-	return m.baseTelegram.dial(dc, protocol)
+	return m.baseTelegram.dial(dc, protocol, raddr)
 }

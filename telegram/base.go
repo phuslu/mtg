@@ -28,10 +28,10 @@ func (b *baseTelegram) Secret() []byte {
 }
 
 func (b *baseTelegram) dial(dc conntypes.DC,
-	protocol conntypes.ConnectionProtocol,
+	protocol conntypes.ConnectionProtocol, raddr *net.TCPAddr,
 ) (conntypes.StreamReadWriteCloser, error) {
 	for _, addr := range b.getAddresses(dc, protocol) {
-		conn, err := dialTelegram(&b.dialer, "tcp", addr)
+		conn, err := dialTelegram(&b.dialer, "tcp", addr, raddr)
 		if err != nil {
 			b.logger.Infow("Cannot dial to Telegram", "address", addr, "error", err)
 

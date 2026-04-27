@@ -1,5 +1,6 @@
 package telegram
 
+import "net"
 import "github.com/9seconds/mtg/conntypes"
 
 const (
@@ -29,7 +30,7 @@ type directTelegram struct {
 }
 
 func (d *directTelegram) Dial(dc conntypes.DC,
-	protocol conntypes.ConnectionProtocol,
+	protocol conntypes.ConnectionProtocol, raddr *net.TCPAddr,
 ) (conntypes.StreamReadWriteCloser, error) {
 	switch {
 	case dc < 0:
@@ -38,5 +39,5 @@ func (d *directTelegram) Dial(dc conntypes.DC,
 		dc = conntypes.DCDefaultIdx
 	}
 
-	return d.baseTelegram.dial(dc-1, conntypes.ConnectionProtocolAny)
+	return d.baseTelegram.dial(dc-1, conntypes.ConnectionProtocolAny, raddr)
 }

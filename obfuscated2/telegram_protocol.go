@@ -13,7 +13,8 @@ import (
 
 func TelegramProtocol(req *protocol.TelegramRequest) (conntypes.StreamReadWriteCloser, error) {
 	conn, err := telegram.Direct.Dial(req.ClientProtocol.DC(),
-		req.ClientProtocol.ConnectionProtocol())
+		req.ClientProtocol.ConnectionProtocol(),
+		req.ClientConn.RemoteAddr())
 	if err != nil {
 		return nil, fmt.Errorf("cannot dial to telegram: %w", err)
 	}

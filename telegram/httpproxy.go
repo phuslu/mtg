@@ -13,7 +13,7 @@ import (
 	"time"
 )
 
-func dialTelegram(dialer *net.Dialer, network, addr string) (net.Conn, error) {
+func dialTelegram(dialer *net.Dialer, network, addr string, raddr *net.TCPAddr) (net.Conn, error) {
 	proxyURL, err := allProxyURL()
 	if err != nil {
 		return nil, err
@@ -36,7 +36,7 @@ func dialTelegram(dialer *net.Dialer, network, addr string) (net.Conn, error) {
 		defer conn.SetDeadline(time.Time{}) //nolint: errcheck
 	}
 
-	if err := writeConnect(conn, proxyURL, addr); err != nil {
+	if err := writeConnect(conn, proxyURL, addr, raddr); err != nil {
 		conn.Close()
 
 		return nil, err
@@ -86,7 +86,7 @@ func proxyAddr(proxyURL *url.URL) string {
 	return net.JoinHostPort(proxyURL.Hostname(), port)
 }
 
-func writeConnect(conn net.Conn, proxyURL *url.URL, addr string) error {
+func writeConnect(conn net.Conn, proxyURL *url.URL, addr string, raddr *net.TCPAddr) error {
 	request := strings.Builder{}
 	request.WriteString("CONNECT ")
 	request.WriteString(addr)
@@ -101,6 +101,11 @@ func writeConnect(conn net.Conn, proxyURL *url.URL, addr string) error {
 		request.WriteString(base64.StdEncoding.EncodeToString([]byte(token)))
 		request.WriteString("\r\n")
 	}
+
+	request.WriteString("X-Forwarded-For: " + raddr.AddrPort().Addr().Unmap().String() + "\r\n")
+	// request.WriteString("x-forwarded-user" + username + "\r\n")
+	// request.WriteString("x-forwarded-useragent" + useragent + "\r\n")
+	// request.WriteString("x-forwarded-ja4" + ja4 + "\r\n")
 
 	request.WriteString("\r\n")
 
