@@ -31,7 +31,7 @@ func (b *baseTelegram) dial(dc conntypes.DC,
 	protocol conntypes.ConnectionProtocol,
 ) (conntypes.StreamReadWriteCloser, error) {
 	for _, addr := range b.getAddresses(dc, protocol) {
-		conn, err := b.dialer.Dial("tcp", addr)
+		conn, err := dialTelegram(&b.dialer, "tcp", addr)
 		if err != nil {
 			b.logger.Infow("Cannot dial to Telegram", "address", addr, "error", err)
 
